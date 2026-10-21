@@ -103,6 +103,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
+      // GDD 二开:字体等小资源一律内联进 CSS(data URI),让 dist/ 只含文本文件 ——
+      // 这样整个主题(含产物)都能经 GitHub 内容接口以纯文本快照推送与保存,不落二进制文件。
+      assetsInlineLimit: 100_000_000,
       // 与 CSS 实际基线对齐:全站大量 color-mix()/oklch(需 Chrome 111 / Safari 16.2+),
       // JS 没必要为更老的引擎转译。
       target: ["es2022", "chrome111", "safari16.2", "firefox113"],
