@@ -72,14 +72,15 @@ describe("formatTrafficRate", () => {
 });
 
 describe("formatByteRate / formatByteRateLabel", () => {
-  it("returns a zeroed B/s display for non-positive / non-finite input", () => {
-    expect(formatByteRate(0)).toEqual({ value: "0", unit: "B/s" });
-    expect(formatByteRate(null)).toEqual({ value: "0", unit: "B/s" });
-    expect(formatByteRate(Number.POSITIVE_INFINITY)).toEqual({ value: "0", unit: "B/s" });
+  it("returns a zeroed KB/s display for non-positive / non-finite input (never B/s)", () => {
+    expect(formatByteRate(0)).toEqual({ value: "0.00", unit: "KB/s" });
+    expect(formatByteRate(null)).toEqual({ value: "0.00", unit: "KB/s" });
+    expect(formatByteRate(Number.POSITIVE_INFINITY)).toEqual({ value: "0.00", unit: "KB/s" });
   });
 
   it("uses the byte (1024) ladder suffixed with /s", () => {
-    expect(formatByteRate(512)).toEqual({ value: "512", unit: "B/s" });
+    expect(formatByteRate(512)).toEqual({ value: "0.50", unit: "KB/s" });
+    expect(formatByteRate(801)).toEqual({ value: "0.78", unit: "KB/s" });
     expect(formatByteRateLabel(KB)).toBe("1.00 KB/s");
     expect(formatByteRateLabel(MB)).toBe("1.00 MB/s");
     expect(formatByteRateLabel(2.5 * GB)).toBe("2.50 GB/s");

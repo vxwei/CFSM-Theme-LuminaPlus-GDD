@@ -99,6 +99,14 @@ export interface ByteRateDisplay {
 // 按字节算的速率(KB/s · MB/s · GB/s · TB/s)——和 formatBytes 同一套 1024 进制,只是加了 "/s" 后缀。
 // 用在传输速度按字节比按比特更自然的地方(如首页实时带宽和节点卡速度),而不是 bps/Kbps/Mbps。
 export function formatByteRate(bytesPerSec: number | undefined | null): ByteRateDisplay {
+  // GDD 定版:速率永不以 B/s 显示 —— 低于 1 KB/s 一律换算成 KB/s 两位小数
+  // (含 0 → "0.00 KB/s"),四个视图与总览共用本函数,口径天然一致。
+  if (bytesPerSec == null || !Number.isFinite(bytesPerSec) || bytesPerSec <= 0) {
+    return { value: "0.00", unit: "KB/s" };
+  }
+  if (bytesPerSec < 1024) {
+    return { value: (bytesPerSec / 1024).toFixed(2), unit: "KB/s" };
+  }
   const [value, unit = "B"] = formatBytes(bytesPerSec).split(" ");
   return { value, unit: `${unit}/s` };
 }

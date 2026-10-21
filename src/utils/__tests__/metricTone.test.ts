@@ -135,7 +135,7 @@ describe("speedRateColor", () => {
   });
 
   it("speedRateColorFromBytes routes raw bytes/sec through the unit tier", () => {
-    expect(speedRateColorFromBytes(0)).toBe("var(--speed-idle)");
+    expect(speedRateColorFromBytes(0)).toBe("var(--speed-low)"); // GDD 定版:0 与亚 KB 速率都归 KB 档(与 idle 同色 #3aa76a)
     expect(speedRateColorFromBytes(5 * 1024 * 1024)).toBe("var(--speed-high)");
   });
 });

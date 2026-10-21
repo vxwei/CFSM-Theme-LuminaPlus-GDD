@@ -65,9 +65,9 @@
   /* 品牌深调:比 --accent-500 更沉、微偏靛,只用于主 CTA / 报头 / 激活态渐变的暗端,
      让品牌蓝有「azure→indigo」的体积感而非一块平涂色。数据色(--progress-cpu 等)不受影响。 */
   --accent-strong: #2f5be0;
-  /* 速率热力四档(现实可见区间):B/s 超低速绿 → KB/s 低速琥珀 → MB/s 高速橙 → GB/s 及以上 急速红。 */
+  /* 速率热力三档(GDD 定版):KB/s 及以下 绿 → MB/s 橙 → GB/s 及以上 红;速率永不以 B/s 显示(见 formatByteRate)。 */
   --speed-idle: #3aa76a;
-  --speed-low: #d9992b;
+  --speed-low: #3aa76a;
   --speed-high: #e07a35;
   --speed-max: #d6463d;
   /* 流量上/下行方向色（图标、出站/入站箭头） */
@@ -135,10 +135,10 @@
   --latency-critical: #f47067;
   --accent-500: #539bf5;
   --accent-strong: #4184e4;
-  --speed-idle: #57ab5a;
-  --speed-low: #daaa3f;
-  --speed-high: #e0823d;
-  --speed-max: #f47067;
+  --speed-idle: #3aa76a;
+  --speed-low: #3aa76a;
+  --speed-high: #e07a35;
+  --speed-max: #d6463d;
   /* 流量上/下行方向色（图标、出站/入站箭头） */
   --traffic-up: #539bf5;
   --traffic-down: #57ab5a;
