@@ -38,7 +38,7 @@ describe("theme version parsing", () => {
     expect(readCurrentThemeVersion()).toBe("1.2.15");
 
     // 改名后的写法照样读得出。
-    expect(parseThemeVersionMeta("AnotherLuminaPlus v1.2.21")).toBe("1.2.21");
+    expect(parseThemeVersionMeta("LuminaPlus-GDD v1.2.21")).toBe("1.2.21");
   });
 });
 

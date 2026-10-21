@@ -1,3 +1,30 @@
+# CFSM-Theme-LuminaPlus-GDD（GDD 二开版）
+
+GDD 自用的 CF-Server-Monitor 主题，基于 Vegas7 的 CFSM-Theme-AnotherLuminaPlus 二次开发
+（上溯 volcano-1025/CFSM-Theme-LuminaPlus，源头 Komari-Theme-LuminaPlus；MIT 许可，原文见下方）。
+
+## 本版定版改动（相对 AnotherLuminaPlus 1.2.20）
+
+- **速度颜色钉死**：`src/styles/tokens.css` 亮/暗两套 `--speed-*` 统一为
+  KB/s 及以下 绿 `#3aa76a`、MB/s 橙 `#e07a35`、GB/s 及以上 红 `#d6463d`
+  （上游设计里 KB 是琥珀色，与站长口径不符，本版改掉）。
+- **速率永不显示 B/s**：`formatByteRate` 低于 1 KB/s 一律换算为 KB/s 两位小数
+  （含 0 → `0.00 KB/s`）。四个视图（大/小/迷你/列表）与首页总览共用同一 store
+  与同一格式化函数，数值与颜色天然同源。
+- **主题身份**：显示名 `LuminaPlus-GDD`；页脚仓库链接与「新版本」检查都指向本仓库
+  （`main` 分支 `dist/` 目录），不再跟随上游发版。
+
+## 安装（自定义主题 URL）
+
+```
+https://github.com/vxwei/CFSM-Theme-LuminaPlus-GDD/tree/main/dist
+```
+
+`dist/` 是构建产物目录（源码在仓库根目录）。更新：本地改源码后 `npm run build`，
+把新的 `dist/` 一并提交推送即可；面板端 Workers 对主题地址有约一小时缓存。
+
+---
+
 # CFSM-Theme-AnotherLuminaPlus
 
 [CF-Server-Monitor](https://github.com/huilang-me/CF-Server-Monitor) 的第三方主题，
