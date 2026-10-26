@@ -75,13 +75,15 @@ function MiniChips({
   renewalPrice,
   ipv4,
   ipv6,
+  affLink,
 }: {
   tags: MiniTag[];
   renewalPrice: string | null;
   ipv4?: string | null;
   ipv6?: string | null;
+  affLink?: string | null;
 }) {
-  if (!renewalPrice && tags.length === 0 && !ipv4 && !ipv6) return null;
+  if (!renewalPrice && tags.length === 0 && !ipv4 && !ipv6 && !affLink) return null;
   const tagTitle = joinTagTitle(tags);
   return (
     <div className="mini-node-chip-row" data-detail-click="off">
@@ -101,6 +103,7 @@ function MiniChips({
           ))}
         </div>
       )}
+      <AffLinkRow affLink={affLink} className="node-aff-link-inline" />
     </div>
   );
 }
@@ -478,9 +481,8 @@ export const MiniNodeCard = memo(function MiniNodeCard({
           node={node}
           osName={osName}
         />
-        <MiniChips tags={footerTags} renewalPrice={renewalPrice} ipv4={node.ipv4} ipv6={node.ipv6} />
+        <MiniChips tags={footerTags} renewalPrice={renewalPrice} ipv4={node.ipv4} ipv6={node.ipv6} affLink={node.affLink} />
       </NodeCardHead>
-      <AffLinkRow affLink={node.affLink} />
       <MiniVitals node={node} loadFraction={loadFraction} />
       <MiniFlow node={node} upRate={upRate} downRate={downRate} />
       <MiniHealth

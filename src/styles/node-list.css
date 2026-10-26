@@ -359,3 +359,11 @@
 .node-list-aff-link:hover {
   text-decoration: underline;
 }
+
+/* 贴进标签行尾部时：顶到行最右端、与标签垂直居中对齐，不换行。 */
+.node-aff-link-inline {
+  margin-left: auto;
+  align-self: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+}

@@ -116,8 +116,6 @@ export const NodeCard = memo(function NodeCard({
         />
 
         <div className="server-card-stack">
-          <AffLinkRow affLink={node.affLink} className="card-metric-section node-aff-link-row" />
-
           <NodeMetricSection
             node={node}
             loadFraction={loadFraction}
@@ -215,7 +213,7 @@ function NodeCardHeader({
             {node.name}
           </Link>
         </div>
-        {(subtitle || node.ipv4 || node.ipv6) && (
+        {(subtitle || node.ipv4 || node.ipv6 || node.affLink) && (
           <div className="server-card-subtitle-row" data-detail-click="off">
             {subtitle && (
               <span className="server-card-subtitle" title={subtitle}>
@@ -223,6 +221,7 @@ function NodeCardHeader({
               </span>
             )}
             <IpStackBadges ipv4={node.ipv4} ipv6={node.ipv6} />
+            <AffLinkRow affLink={node.affLink} className="node-aff-link-inline" />
           </div>
         )}
       </div>

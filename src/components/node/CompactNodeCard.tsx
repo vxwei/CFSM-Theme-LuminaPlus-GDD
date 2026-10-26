@@ -394,11 +394,13 @@ function CompactNodeChips({
   tags,
   ipv4,
   ipv6,
+  affLink,
 }: {
   subtitle: string;
   tags: CompactTag[];
   ipv4?: string | null;
   ipv6?: string | null;
+  affLink?: string | null;
 }) {
   // 完整 tag 列表挂在 lane 的 tooltip 上;chip 不带自己的 title,hover 会穿透到 lane 上 ——
   // 被裁剪 lane 折行挤出去的 tag 就靠这个保持可见,不用显示"+N"角标。
@@ -425,6 +427,7 @@ function CompactNodeChips({
           ))}
         </div>
       )}
+      <AffLinkRow affLink={affLink} className="node-aff-link-inline" />
     </div>
   );
 }
@@ -752,9 +755,8 @@ export const CompactNodeCard = memo(function CompactNodeCard({
           node={node}
           osName={osName}
         />
-        <CompactNodeChips subtitle={subtitle} tags={footerTags} ipv4={node.ipv4} ipv6={node.ipv6} />
+        <CompactNodeChips subtitle={subtitle} tags={footerTags} ipv4={node.ipv4} ipv6={node.ipv6} affLink={node.affLink} />
       </NodeCardHead>
-      <AffLinkRow affLink={node.affLink} />
       <CompactNodeVitals node={node} loadFraction={loadFraction} />
       <CompactNodeInfoStrip
         node={node}

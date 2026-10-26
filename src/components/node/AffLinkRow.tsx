@@ -1,4 +1,5 @@
 import type { KeyboardEvent, MouseEvent } from "react";
+import { clsx } from "clsx";
 
 /**
  * 服务器卡片里的购买链接行：后台给节点填了购买链接才渲染，没填不留空行。
@@ -11,7 +12,7 @@ import type { KeyboardEvent, MouseEvent } from "react";
 export function AffLinkRow({
   affLink,
   withinLink = false,
-  className = "node-aff-link-row",
+  className = "",
 }: {
   affLink?: string | null;
   withinLink?: boolean;
@@ -27,7 +28,7 @@ export function AffLinkRow({
     };
     return (
       <span
-        className="node-list-aff-link"
+        className={clsx("node-list-aff-link", className)}
         data-detail-click="off"
         role="link"
         tabIndex={0}
@@ -42,7 +43,7 @@ export function AffLinkRow({
   }
 
   return (
-    <div className={className} data-detail-click="off">
+    <div className={clsx("node-aff-link-row", className)} data-detail-click="off">
       <a
         href={affLink}
         target="_blank"

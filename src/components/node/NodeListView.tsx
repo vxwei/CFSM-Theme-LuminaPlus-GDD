@@ -295,7 +295,7 @@ const NodeRow = memo(function NodeRow({ uuid }: { uuid: string }) {
               {node.name}
             </span>
           </div>
-          {(renewalPrice || footerTags.length > 0) && (
+          {(renewalPrice || footerTags.length > 0 || node.affLink) && (
             <div className="node-list-chips" title={footerTags.length > 0 ? joinTagTitle(footerTags) : undefined}>
               {renewalPrice && (
                 <span className="dstatus-price-chip">
@@ -313,9 +313,9 @@ const NodeRow = memo(function NodeRow({ uuid }: { uuid: string }) {
                   {tag.label}
                 </span>
               ))}
+              <AffLinkRow affLink={node.affLink} withinLink className="node-aff-link-inline" />
             </div>
           )}
-          <AffLinkRow affLink={node.affLink} withinLink />
         </div>
       </div>
 
