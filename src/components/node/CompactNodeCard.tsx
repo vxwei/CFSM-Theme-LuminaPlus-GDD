@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import { Flag } from "@/components/ui/Flag";
+import { AffLinkRow } from "./AffLinkRow";
 import { OsLogo } from "@/components/ui/OsLogo";
 import { useNodeCardModel } from "@/hooks/useNodeCardModel";
 import { HOMEPAGE_PING_BUCKET_COUNT } from "@/hooks/usePingOverview";
@@ -753,6 +754,7 @@ export const CompactNodeCard = memo(function CompactNodeCard({
         />
         <CompactNodeChips subtitle={subtitle} tags={footerTags} ipv4={node.ipv4} ipv6={node.ipv6} />
       </NodeCardHead>
+      <AffLinkRow affLink={node.affLink} />
       <CompactNodeVitals node={node} loadFraction={loadFraction} />
       <CompactNodeInfoStrip
         node={node}

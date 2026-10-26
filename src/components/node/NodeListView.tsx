@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUp, CircleDollarSign } from "lucide-react";
 import { clsx } from "clsx";
 import { Flag } from "@/components/ui/Flag";
+import { AffLinkRow } from "./AffLinkRow";
 import { OsLogo } from "@/components/ui/OsLogo";
 import { useNodeCardModel } from "@/hooks/useNodeCardModel";
 import { usePreferences } from "@/hooks/usePreferences";
@@ -314,6 +315,7 @@ const NodeRow = memo(function NodeRow({ uuid }: { uuid: string }) {
               ))}
             </div>
           )}
+          <AffLinkRow affLink={node.affLink} withinLink />
         </div>
       </div>
 

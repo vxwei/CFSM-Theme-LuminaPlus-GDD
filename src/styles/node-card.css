@@ -690,3 +690,18 @@
 .mini-node-card:not(.is-offline) .node-card-head:hover:not(:has([data-detail-click="off"]:hover)) .mini-node-title {
   color: var(--progress-cpu);
 }
+
+/* 购买链接行：只在后台给节点填了 aff_link 时渲染，没填不留空行。 */
+.node-aff-link-row {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.node-aff-link-row a {
+  color: var(--accent-500);
+  text-decoration: none;
+}
+
+.node-aff-link-row a:hover {
+  text-decoration: underline;
+}

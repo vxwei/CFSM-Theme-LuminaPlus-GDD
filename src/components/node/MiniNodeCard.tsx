@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { clsx } from "clsx";
 import { Flag } from "@/components/ui/Flag";
+import { AffLinkRow } from "./AffLinkRow";
 import { OsLogo } from "@/components/ui/OsLogo";
 import { IpStackBadges } from "./IpStackBadges";
 import { NodeCardHead } from "./NodeCardHead";
@@ -479,6 +480,7 @@ export const MiniNodeCard = memo(function MiniNodeCard({
         />
         <MiniChips tags={footerTags} renewalPrice={renewalPrice} ipv4={node.ipv4} ipv6={node.ipv6} />
       </NodeCardHead>
+      <AffLinkRow affLink={node.affLink} />
       <MiniVitals node={node} loadFraction={loadFraction} />
       <MiniFlow node={node} upRate={upRate} downRate={downRate} />
       <MiniHealth

@@ -1,7 +1,7 @@
 {
   "name": "cfsm-theme-luminaplus-gdd",
   "private": true,
-  "version": "1.2.21",
+  "version": "1.2.22",
   "type": "module",
   "description": "CFSM-Theme-LuminaPlus-GDD: GDD 的二开版 CF-Server-Monitor 主题（基于 Vegas7/CFSM-Theme-AnotherLuminaPlus，上溯 volcano-1025/CFSM-Theme-LuminaPlus 与 Komari-Theme-LuminaPlus）。定版改动：速度色钉死（KB 绿/MB 橙/GB 红）、速率永不显示 B/s。",
   "author": "codex&shark&shanyang",

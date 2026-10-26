@@ -38,6 +38,7 @@ import {
   TRAFFIC_SLIVER_RATIO,
 } from "./nodeCardShared";
 import { IpStackBadges } from "./IpStackBadges";
+import { AffLinkRow } from "./AffLinkRow";
 import { nodeDetailPath, useNodeDetailClick } from "./useNodeDetailClick";
 import { HealthBucketTooltip } from "./HealthBucketTooltip";
 import { MultiPingStatus } from "./MultiPingStatus";
@@ -115,6 +116,8 @@ export const NodeCard = memo(function NodeCard({
         />
 
         <div className="server-card-stack">
+          <AffLinkRow affLink={node.affLink} className="card-metric-section node-aff-link-row" />
+
           <NodeMetricSection
             node={node}
             loadFraction={loadFraction}

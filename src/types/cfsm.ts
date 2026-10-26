@@ -86,6 +86,7 @@ export const CfsmServerSchema = z
     name: looseString.default(""),
     server_group: looseString.default(""),
     tags: looseString.default(""),
+    aff_link: looseString.default(""),
     price: looseString.default(""),
     billing_cycle: looseString.default(""),
     auto_renewal: looseString.default(""),
@@ -359,6 +360,8 @@ export interface NodeInfo {
   expired_at: string;
   tags: string;
   public_remark: string;
+  /** 后台填的购买链接（AFF）；空字符串表示不显示。 */
+  affLink: string;
   /** 流量配额，字节；0 表示不限。 */
   traffic_limit: number;
   /** 归一化后的配额口径：sum / up / down / max。 */

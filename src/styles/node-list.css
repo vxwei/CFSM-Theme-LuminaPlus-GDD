@@ -345,3 +345,17 @@
     display: none;
   }
 }
+
+/* 列表视图里的购买链接：整行就是一个 Link，不能再嵌 <a>，用 span + 手动打开。 */
+.node-list-aff-link {
+  display: block;
+  width: fit-content;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--accent-500);
+  cursor: pointer;
+}
+
+.node-list-aff-link:hover {
+  text-decoration: underline;
+}

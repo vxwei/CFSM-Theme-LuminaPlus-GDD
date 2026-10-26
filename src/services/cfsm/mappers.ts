@@ -323,6 +323,8 @@ export function toNodeInfo(server: CfsmServer): NodeInfo {
     tags: server.tags,
     // note 是管理端内部字段，公共接口不返回。
     public_remark: "",
+    // 后台 servers.aff_link：有值才在卡片里渲染购买链接行。
+    affLink: server.aff_link,
     traffic_limit: parseTrafficLimitBytes(server.traffic_limit),
     traffic_limit_type: normalizeTrafficCalcType(server.traffic_calc_type),
     traffic_reset_day: server.reset_day,
