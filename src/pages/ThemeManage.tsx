@@ -98,6 +98,16 @@ import {
   type HomepagePingTaskBindings,
 } from "@/utils/pingTasks";
 import {
+  EMPTY_PING_LINE_OVERRIDES,
+  EMPTY_PING_LINE_OVERRIDES_BY_NODE,
+  nodePingLineOverrides,
+  normalizePingLineOverridesByNode,
+  resolveNodePingLineTaskIds,
+  switchPingLine,
+  type PingLineOverrides,
+  type PingLineOverridesByNode,
+} from "@/utils/pingLineOverrides";
+import {
   DEFAULT_THEME_SETTINGS,
   normalizeThemeSettings,
   withPreferredAppearance,
@@ -212,6 +222,23 @@ function pruneBindings(bindings: HomepagePingTaskBindings) {
   return pruned;
 }
 
+// 逐节点多线路覆盖：只留节点表里还在的节点。删掉的节点那份留在存储里不显示、
+// 也不参与计数，保存时顺手丢掉，和 pruneBindings 同一个道理。
+function pruneLineOverrides(
+  byNode: PingLineOverridesByNode,
+  clientsById: Map<string, NodeInfo>,
+) {
+  const normalized = normalizePingLineOverridesByNode(byNode);
+  if (clientsById.size === 0) return normalized;
+  const pruned: Record<string, PingLineOverrides> = {};
+  for (const [uuid, overrides] of Object.entries(normalized)) {
+    if (clientsById.has(uuid)) pruned[uuid] = overrides;
+  }
+  return Object.keys(pruned).length > 0
+    ? pruned
+    : EMPTY_PING_LINE_OVERRIDES_BY_NODE;
+}
+
 function applyClientAssignment(
   bindings: HomepagePingTaskBindings,
   taskId: number,
@@ -290,6 +317,7 @@ function pickManagedThemeSettings(settings: ResolvedThemeSettings) {
     homepageDefaultPingTaskId: settings.homepageDefaultPingTaskId,
     enableHomepageMultiPing: settings.enableHomepageMultiPing,
     homepageMultiPingTaskIds: settings.homepageMultiPingTaskIds,
+    homepagePingLineOverrides: settings.homepagePingLineOverrides,
     showHomeOverview: settings.showHomeOverview,
     showAssetOverview: settings.showAssetOverview,
     showGroupTabs: settings.showGroupTabs,
@@ -619,6 +647,96 @@ const TaskBindingSection = memo(function TaskBindingSection({
   );
 });
 
+// 逐节点多线路：一台节点三个槽位的线路选择。memo：编辑无关设置的击键不再重渲节点列表。
+// 槽位下拉复用全局那套互换标注（选了别的行在用的线路会标「与线路 X 互换」）。
+const NodeLineOverrideSection = memo(function NodeLineOverrideSection({
+  client,
+  siteTaskIds,
+  overrides,
+  tasks,
+  onPatchLineOverride,
+  onResetLineOverride,
+}: {
+  client: NodeInfo;
+  /** 站点当前的全局线路列表（按顺序），覆盖按它的下标算。 */
+  siteTaskIds: readonly number[];
+  /** 这台节点当前在覆盖表里的行（可能为空 = 跟随全局）。 */
+  overrides: PingLineOverrides;
+  tasks: PingTask[];
+  onPatchLineOverride: (uuid: string, slot: number, rawValue: string) => void;
+  onResetLineOverride: (uuid: string) => void;
+}) {
+  const displayed = resolveNodePingLineTaskIds(siteTaskIds, overrides);
+  const hasOverride = Object.keys(overrides).length > 0;
+  const subtitle = [client.group, client.uuid].filter(Boolean).join(" · ");
+  return (
+    <section className="surface-inset px-4 py-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <Flag region={client.region} size={14} />
+            <h3 className="truncate text-[15px] font-semibold text-[var(--text-primary)]">
+              {client.name}
+            </h3>
+            <span className="rounded-full border border-[var(--hairline)] px-2 py-0.5 text-[10px] font-medium text-[var(--text-tertiary)]">
+              {hasOverride ? "已单独指定" : "跟随全局"}
+            </span>
+          </div>
+          <div className="mt-1 setting-hint">
+            {subtitle || client.region || "未设置分组"}
+          </div>
+        </div>
+        <button
+          type="button"
+          disabled={!hasOverride}
+          onClick={() => onResetLineOverride(client.uuid)}
+          className="theme-manage-button is-compact"
+        >
+          跟随全局
+        </button>
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        {displayed.map((selectedTaskId, slot) => (
+          // key 用槽位号、不带线路 id：互换会同时改两个槽位，带 id 的话两个都重新挂载，
+          // 刚操作的下拉框丢焦点（和上面全局槽位同一个道理）。
+          <div key={slot} className="min-w-0">
+            <label
+              htmlFor={`node-line-${client.uuid}-${slot}`}
+              className="mb-1.5 block setting-field-label"
+            >
+              线路 {slot + 1}
+            </label>
+            <SettingSelect
+              id={`node-line-${client.uuid}-${slot}`}
+              value={selectedTaskId}
+              onChange={(event) =>
+                onPatchLineOverride(client.uuid, slot, event.target.value)
+              }
+            >
+              {!tasks.some((task) => task.id === selectedTaskId) && (
+                <option value={selectedTaskId}>
+                  任务 #{selectedTaskId}（当前不可用）
+                </option>
+              )}
+              {tasks.map((task) => {
+                const usedAt = displayed.indexOf(task.id);
+                const swapsWith = task.id !== selectedTaskId ? usedAt : -1;
+                return (
+                  <option key={task.id} value={task.id}>
+                    {`${task.name || `任务 #${task.id}`}${
+                      swapsWith >= 0 ? `（与线路 ${swapsWith + 1} 互换）` : ""
+                    }`}
+                  </option>
+                );
+              })}
+            </SettingSelect>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+});
+
 type PremiumDetail = ReturnType<typeof calculateCostSummary>["details"][number];
 
 // 溢价录入列表。memo:编辑其他设置的击键不重渲整表——引用变化只来自
@@ -888,6 +1006,39 @@ export function ThemeManage() {
     },
     [],
   );
+  // 逐节点多线路：改某台某个槽位的线路。互换语义复用 switchPingLine —— 选了别的行
+  // 已在用的线路就两行互换，不会画出两行一样的；换回和全局一致时那行从覆盖表里删掉，
+  // 整台都换回去就等于跟随全局，uuid 整个从表里拿掉。
+  const patchLineOverride = useCallback(
+    (uuid: string, slot: number, rawValue: string) => {
+      const taskId = Number(rawValue);
+      if (!Number.isInteger(taskId) || taskId <= 0) return;
+      editVersionRef.current += 1;
+      setDraft((prev) => {
+        const next = switchPingLine(
+          prev.homepageMultiPingTaskIds,
+          nodePingLineOverrides(prev.homepagePingLineOverrides, uuid),
+          slot,
+          taskId,
+        );
+        const byNode = { ...prev.homepagePingLineOverrides };
+        if (next === EMPTY_PING_LINE_OVERRIDES) delete byNode[uuid];
+        else byNode[uuid] = next;
+        return { ...prev, homepagePingLineOverrides: byNode };
+      });
+    },
+    [],
+  );
+  const resetLineOverride = useCallback((uuid: string) => {
+    editVersionRef.current += 1;
+    setDraft((prev) => {
+      if (!Object.prototype.hasOwnProperty.call(prev.homepagePingLineOverrides, uuid))
+        return prev;
+      const byNode = { ...prev.homepagePingLineOverrides };
+      delete byNode[uuid];
+      return { ...prev, homepagePingLineOverrides: byNode };
+    });
+  }, []);
   /**
    * 设置区是独立滚动区：顶栏固定，卡片只在自己的区域里滚，永远不会滑到顶栏那一块去。
    * 高度只能量出来 —— 顶栏高度随登录态和换行变化，页脚高度也随站点信息变。量完页面本身正好不用滚，
@@ -1235,6 +1386,10 @@ export function ThemeManage() {
     return {
       ...rest,
       homepagePingBindings: pruneBindings(rest.homepagePingBindings),
+      homepagePingLineOverrides: pruneLineOverrides(
+        rest.homepagePingLineOverrides,
+        clientsById,
+      ),
       homeGroupOrder: normalizeHomeGroupOrder(rest.homeGroupOrder),
       homeRegionOrder: normalizeHomeRegionOrder(rest.homeRegionOrder),
       trafficRatingLabels: ratingLabels.traffic,
@@ -1245,7 +1400,7 @@ export function ThemeManage() {
       costPremiums: normalizeCostPremiums(rest.costPremiums),
       costRateApiUrl: normalizeCostRateApiUrl(rest.costRateApiUrl),
     };
-  }, [draft]);
+  }, [draft, clientsById]);
 
   // 只比较本页实际管理的设置。enableAdminButton/showPingChart 这类隐藏设置会通过
   // baseSettings 在保存时保留,但不该让表单永远显示为 dirty。
@@ -1293,6 +1448,18 @@ export function ThemeManage() {
     }
     return count;
   }, [assignedTaskByClientUuid, clientsById]);
+
+  // 「已单独指定 N / 共几台」（多线路覆盖版）：只数节点表里还在的，覆盖表里留着删掉的
+  // 节点 ID 不算（和上面 assignedNodeCount 同一个道理）。
+  const overriddenNodeCount = useMemo(() => {
+    if (clientsById.size === 0)
+      return Object.keys(draft.homepagePingLineOverrides).length;
+    let count = 0;
+    for (const uuid of Object.keys(draft.homepagePingLineOverrides)) {
+      if (clientsById.has(uuid)) count += 1;
+    }
+    return count;
+  }, [draft.homepagePingLineOverrides, clientsById]);
 
   /**
    * 自动保存：表单一停手就把草稿存进本机；登录站长那边自动同步随即把它发到后端
@@ -2416,9 +2583,55 @@ export function ThemeManage() {
               >
                 <div className="flex flex-col gap-3">
                   <p className="setting-hint">
-                    没指定的节点都走上面的默认线路；迷你卡片与列表始终按单线路显示，这里指定的对它们同样生效。
-                    已单独指定 {assignedNodeCount} / {sortedClients.length} 台。
+                    多线路卡片：下面给每台单独选三条线路，不选就跟随上面「显示这些线路」。
+                    迷你卡片与列表始终按单线路显示，用下面的单线路绑定。
                   </p>
+
+                  {/* 逐节点多线路：大卡片 / 小卡片每台单独的三条线路。单线路模式下用不上，
+                      只在多线路模式展开；单线路绑定（迷你卡片与列表）不受模式影响，一直在下面。 */}
+                  {draft.enableHomepageMultiPing ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="setting-subhead">
+                        <span className="setting-field-label">逐节点多线路</span>
+                        <span className="setting-hint">
+                          已单独指定 {overriddenNodeCount} / {sortedClients.length} 台
+                        </span>
+                      </div>
+                      {draftMultiPingInvalid ? (
+                        <p className="setting-hint">
+                          先在上面「显示这些线路」里至少选 1 条线路，再给节点单独指定。
+                        </p>
+                      ) : (
+                        sortedClients.map((client) => (
+                          <NodeLineOverrideSection
+                            key={client.uuid}
+                            client={client}
+                            siteTaskIds={draft.homepageMultiPingTaskIds}
+                            overrides={nodePingLineOverrides(
+                              draft.homepagePingLineOverrides,
+                              client.uuid,
+                            )}
+                            tasks={sortedTasks}
+                            onPatchLineOverride={patchLineOverride}
+                            onResetLineOverride={resetLineOverride}
+                          />
+                        ))
+                      )}
+                    </div>
+                  ) : (
+                    <p className="setting-hint">
+                      当前是单线路模式：每台只显示一条线路，多线路的逐节点指定用不上；切回多线路后这里会展开。
+                    </p>
+                  )}
+
+                  <div className="setting-subhead mt-2">
+                    <span className="setting-field-label">
+                      单线路绑定（迷你卡片与列表）
+                    </span>
+                    <span className="setting-hint">
+                      已单独指定 {assignedNodeCount} / {sortedClients.length} 台
+                    </span>
+                  </div>
                   <label className="surface-inset mb-3 flex items-center gap-2 px-3 py-2">
                     <Search size={14} className="text-[var(--text-tertiary)]" />
                     <input
