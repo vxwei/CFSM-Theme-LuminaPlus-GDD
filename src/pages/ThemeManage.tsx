@@ -695,7 +695,7 @@ const NodeLineOverrideSection = memo(function NodeLineOverrideSection({
           跟随全局
         </button>
       </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {displayed.map((selectedTaskId, slot) => (
           // key 用槽位号、不带线路 id：互换会同时改两个槽位，带 id 的话两个都重新挂载，
           // 刚操作的下拉框丢焦点（和上面全局槽位同一个道理）。
