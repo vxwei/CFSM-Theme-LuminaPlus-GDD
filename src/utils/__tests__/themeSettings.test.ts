@@ -15,7 +15,7 @@ describe("normalizeThemeSettings", () => {
     );
     expect(normalizeThemeSettings({ mobileNodeViewMode: "mini" }).mobileNodeViewMode).toBe("mini");
     expect(normalizeThemeSettings({ mobileNodeViewMode: "list" }).mobileNodeViewMode).toBe(
-      "compact",
+      "mini",
     );
   });
 
